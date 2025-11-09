@@ -95,7 +95,7 @@ extern void FUN_00065c80();
 extern void sleep_milliseconds(dword ms);
 extern void FUN_0015fa20();
 extern int FUN_0015fa10();
-extern void FUN_000694a0(void* device, int index);
+extern float FUN_000694a0(void* device, int index);
 extern ulonglong FUN_0017c3e8();
 extern void FUN_0003e440(void* obj, dword param);
 extern void FUN_0003e430(void* obj, dword param);
@@ -605,10 +605,56 @@ int FUN_0015fa10() {
     return 0;
 }
 
-void FUN_000694a0(void* device, int index) {
+/*
+==============================================================================
+FUNCTION: Float Array Accessor (Hardware Register Reader)
+ADDRESS:  0x000694a0
+STATUS:   Complete
+==============================================================================
+
+DESCRIPTION:
+Reads a floating-point value from a hardware register array at the specified
+index. Used in conjunction with FUN_0017c3e8 to read controller/peripheral
+data byte-by-byte from Xbox hardware.
+
+PARAMETERS:
+- param_1: int* - Pointer to device structure containing float array pointer
+- param_2: uint - Index into the float array (register number)
+
+RETURNS:
+- float10: Extended precision float from the register, or 0.0 if out of bounds
+
+CALLED BY:
+- game_frame_update (0x00013a80) - for reading input/controller values
+
+NOTES:
+- Bounds check: index must be < 0x5e (94 decimal)
+- Accesses float array via double indirection: *param_1 + index * 4
+- Returns float10 (80-bit extended precision) for x87 FPU compatibility
+- Part of input reading pattern with FUN_0017c3e8
+
+Usage pattern:
+  FUN_000694a0(&DAT_00251f5c, 8);  // Set register index
+  value = FUN_0017c3e8();          // Read the float at that index
+
+==============================================================================
+*/
+float FUN_000694a0(void* device, int index) {
     ADDR(0x000694a0);
-    (void)device;
-    (void)index;
+
+    int* param_1 = (int*)device;
+    uint param_2 = (uint)index;
+
+    // Bounds check: array has 94 entries (0x5e)
+    if (param_2 < 0x5e) {
+        // Double dereference to get float array, then index into it
+        // *param_1 gets the pointer to float array
+        // param_2 * 4 is byte offset (sizeof(float) = 4)
+        float* float_array = (float*)(*param_1);
+        return float_array[param_2];
+    }
+
+    return 0.0f;
 }
 
 /*

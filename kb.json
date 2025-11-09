@@ -271,9 +271,10 @@
           "status": "stub"
         },
         {
-          "decl": "void FUN_000694a0(void* device, int index)",
+          "decl": "float FUN_000694a0(void* device, int index)",
           "addr": "0x694a0",
-          "status": "stub"
+          "status": "complete",
+          "notes": "Float array accessor for hardware registers. Bounds-checked read from float array. Returns register value or 0.0 if out of bounds."
         },
         {
           "decl": "ulonglong FUN_0017c3e8(void)",
