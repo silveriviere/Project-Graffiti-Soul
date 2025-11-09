@@ -1,0 +1,13 @@
+# Python dependencies for Graffiti Soul decompilation tools
+
+# For PE/XBE file parsing and manipulation
+pefile>=2023.2.7
+
+# For JSON schema validation
+jsonschema>=4.17.0
+
+# For binary patching utilities
+capstone>=5.0.0
+
+# For struct packing/unpacking
+construct>=2.10.0

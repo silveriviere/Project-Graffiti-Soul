@@ -1,10 +1,17 @@
 # Build directories
 build/
+build-*/
 bin/
 lib/
 *.exe
 *.out
 *.app
+
+# Testing directories (contain copyrighted game files)
+jsrf-original/
+jsrf-patched/
+*.xbe
+*.iso
 
 # CMake
 CMakeCache.txt
@@ -50,3 +57,11 @@ Thumbs.db
 *.gpr
 *.lock
 *.rep/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+venv/
+.env

@@ -44,32 +44,73 @@ Graffiti Soul is a reverse engineering and decompilation effort for Jet Set Radi
 
 - **Preservation**: Original Xbox hardware is aging and failing. Preserving these games in a documented, understandable form helps ensure they aren't lost to time.
 - **Education**: Understanding how commercial games were actually built provides valuable insights into game development techniques from that era.
+- **Native Port**: The ultimate goal is a complete, standalone reimplementation that runs natively on modern hardware (PC, Linux, macOS, etc.) without requiring an emulator or original Xbox hardware.
 - **Modding**: A complete decompilation allows the community to fix bugs, add features, and create mods (assuming you own the game legally).
-- **Portability**: Eventually, this could enable the game to run on modern hardware for people who own legitimate copies.
+- **Modern Features**: Once complete, we can add quality-of-life improvements like higher resolutions, wider aspect ratios, improved controls, and online multiplayer.
 
-### Project Status
+### Project Roadmap
 
-This project is in early development and very much a work in progress.
+**Phase 1: Decompilation** (Current)
+- Reverse engineer all game functions using Ghidra/IDA
+- Document function addresses and signatures in kb.json
+- Create matching C++ implementations
+- Current progress: Entry point, game loop, subsystem framework
 
-Currently implemented:
-- Basic XBE entry point structure
-- Thread initialization framework
-- Game state initialization stubs
-- Main game loop skeleton
+**Phase 2: Verification** (In Progress)
+- Test decompiled functions by patching into original XBE
+- Verify behavioral correctness using xemu emulator
+- Ensure matching assembly output
+- This phase uses the testing infrastructure in TESTING.md
 
-Much work remains to fully decompile all game systems.
+**Phase 3: Native Port** (Future)
+- Replace Xbox-specific APIs with cross-platform equivalents
+- Implement Direct3D → modern graphics API translation (Vulkan/OpenGL/Metal)
+- Port audio, input, and file I/O systems
+- Create standalone executable that doesn't need emulator or original XBE
+- Support modern platforms: Windows, Linux, macOS, potentially consoles
+
+**Phase 4: Enhancement** (Future)
+- Add quality-of-life improvements
+- Higher resolutions and widescreen support
+- Improved frame rates
+- Modern controller support
+- Accessibility features
+- Bug fixes and improvements
+
+### Current Status
+
+**Phase 1 Progress:**
+- ✅ Entry point structure
+- ✅ Thread initialization framework
+- ✅ Game state initialization
+- ✅ Main game loop
+- ✅ Subsystem frame update manager (complete)
+- 🔄 30+ subsystem functions (stubs, need implementation)
+
+**Phase 2 Progress:**
+- ✅ Testing infrastructure (xemu patching workflow)
+- ⏳ Function verification (not yet tested in xemu)
+
+Much work remains to fully decompile all game systems, but the foundation is in place.
 
 ## Building
 
 ### Prerequisites
 
+**For development builds:**
 - CMake 3.15 or higher
 - C++17 compatible compiler (GCC, Clang, or MSVC)
 - Git
 
+**For Xbox testing builds:**
+- Clang/LLVM toolchain
+- Python 3.8+ with dependencies (`pip install -r requirements.txt`)
+- Original JSRF XBE file (from your legally owned copy)
+- xemu emulator (https://xemu.app/)
+
 ### Build Instructions
 
-NOTE THIS PROJECT IS CURRENTLY NOT FUNCTIONAL!!!
+**Standard development build** (compiles on your platform for verification):
 
 ```bash
 # Clone the repository
@@ -86,24 +127,49 @@ cmake --build .
 # The executable will be in build/bin/graffiti-soul
 ```
 
-Or use the build script:
+**Xbox testing build** (creates patchable XBE for testing in xemu):
 
 ```bash
-./build.sh
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Create Xbox build directory
+mkdir build-xbox && cd build-xbox
+
+# Configure for Xbox with patching enabled
+cmake .. \
+  -DCMAKE_C_COMPILER=clang \
+  -DCMAKE_CXX_COMPILER=clang++ \
+  -DBUILD_FOR_XBOX=ON \
+  -DENABLE_PATCHING=ON \
+  -DORIGINAL_XBE=../jsrf-original/default.xbe
+
+# Build and patch
+cmake --build .
+cmake --build . --target patch-xbe
+
+# Patched XBE is created at build-xbox/jsrf-patched/default.xbe
 ```
+
+**For complete testing instructions**, see [TESTING.md](TESTING.md).
 
 ## Project Structure
 
 ```
 graffiti-soul/
 ├── src/
-│   └── main.cpp           # Entry point and main game loop
+│   └── main.cpp              # Entry point, main game loop, subsystems
 ├── include/
-│   └── types.h            # Type definitions matching Xbox SDK
+│   └── types.h               # Type definitions matching Xbox SDK
 ├── docs/
-│   └── function_template.cpp  # Template for decompiled functions
-├── CMakeLists.txt         # Build configuration
-└── README.md              # This file
+│   └── function_template.cpp # Template for decompiled functions
+├── tools/
+│   └── patch.py              # XBE patching tool for testing
+├── kb.json                   # Knowledge base - tracks all functions and addresses
+├── requirements.txt          # Python dependencies
+├── CMakeLists.txt            # Build configuration
+├── TESTING.md                # Testing guide with xemu
+└── README.md                 # This file
 ```
 
 ## Contributing
@@ -122,6 +188,9 @@ Contributions are welcome! If you're interested in helping with this preservatio
 - Use descriptive names when the original symbols are unknown
 - Document any assumptions or uncertainties
 - Do not include any copyrighted assets or data
+- Add function entries to `kb.json` with status (`stub`, `partial`, or `complete`)
+- Test your decompiled functions using the XBE patching workflow (see [TESTING.md](TESTING.md))
+- Verify that patched functions work correctly in xemu before marking as `complete`
 
 ## Legal FAQ
 
