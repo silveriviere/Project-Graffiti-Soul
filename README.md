@@ -50,19 +50,19 @@ Graffiti Soul is a reverse engineering and decompilation effort for Jet Set Radi
 
 ### Project Roadmap
 
-**Phase 1: Decompilation** (Current)
+**Decompilation** 
 - Reverse engineer all game functions using Ghidra/IDA
 - Document function addresses and signatures in kb.json
 - Create matching C++ implementations
 - Current progress: Entry point, game loop, subsystem framework
 
-**Phase 2: Verification** (In Progress)
+**Verification** 
 - Test decompiled functions by patching into original XBE
 - Verify behavioral correctness using xemu emulator
 - Ensure matching assembly output
 - This phase uses the testing infrastructure in TESTING.md
 
-**Phase 3: Native Port** (Future)
+**Native Port** (Future)
 - Replace Xbox-specific APIs with cross-platform equivalents
 - Implement Direct3D → modern graphics API translation (Vulkan/OpenGL/Metal)
 - Port audio, input, and file I/O systems
