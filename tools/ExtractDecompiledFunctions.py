@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Extract decompiled functions to markdown for external analysis
 # @author Graffiti Soul Team
 # @category Analysis
@@ -145,7 +146,7 @@ def format_as_markdown(functions_info, title="Decompiled Functions"):
         # Add call depth if available (from call graph extraction)
         if 'call_depth' in info:
             indent = "  " * info['call_depth']
-            md += "**Call Depth:** {} {}\n\n".format(info['call_depth'], indent + "└─ (execution flow)")
+            md += "**Call Depth:** {} {}\n\n".format(info['call_depth'], indent + "-> (execution flow)")
 
         md += "**Signature:** `{}`\n\n".format(info['signature'])
 
