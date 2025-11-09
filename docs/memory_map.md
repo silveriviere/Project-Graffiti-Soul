@@ -4,10 +4,12 @@ Track original addresses from Ghidra analysis to maintain correspondence with th
 
 ## Entry Points
 
-| Address    | Function Name           | Description                          | Status |
-|------------|-------------------------|--------------------------------------|--------|
-| 0x147fb4   | game_main_thread        | Main game initialization thread      | Stub   |
-| 0x145585   | thread_cleanup          | Thread cleanup/wait handler          | Stub   |
+| Address    | Function Name           | Description                          | Status    |
+|------------|-------------------------|--------------------------------------|-----------|
+| (TBD)      | entry                   | XBE entry point (launches thread)    | Decompiled|
+| 0x147fb4   | runtime_wrapper_thread  | C/C++ runtime init wrapper           | Decompiled|
+| 0x145585   | thread_cleanup          | Thread cleanup/wait handler          | Stub      |
+| **0x0006f9e0** | **jsrf_game_main**  | **ACTUAL GAME ENTRY POINT**          | **TODO**  |
 
 ## Initialization Functions
 
