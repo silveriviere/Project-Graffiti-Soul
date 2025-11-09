@@ -141,6 +141,12 @@ def format_as_markdown(functions_info, title="Decompiled Functions"):
     for idx, info in enumerate(functions_info, 1):
         md += "## {}. {}\n\n".format(idx, info['name'])
         md += "**Address:** `{}`\n\n".format(info['address'])
+
+        # Add call depth if available (from call graph extraction)
+        if 'call_depth' in info:
+            indent = "  " * info['call_depth']
+            md += "**Call Depth:** {} {}\n\n".format(info['call_depth'], indent + "└─ (execution flow)")
+
         md += "**Signature:** `{}`\n\n".format(info['signature'])
 
         # Add type information
@@ -216,11 +222,42 @@ def extract_all_functions_in_range(start_addr, end_addr):
     return functions
 
 
+def extract_call_graph(root_func, max_depth=5, max_functions=50):
+    """
+    Extract functions in execution order by following the call graph.
+
+    Args:
+        root_func: Starting function (e.g., entry point)
+        max_depth: How deep to follow calls (default 5)
+        max_functions: Maximum functions to extract (default 50)
+
+    Returns:
+        List of tuples (function, depth) in execution order
+    """
+    monitor = ConsoleTaskMonitor()
+    visited = set()
+    ordered_functions = []
+
+    def traverse(func, depth):
+        if not func or func in visited or depth > max_depth or len(ordered_functions) >= max_functions:
+            return
+
+        visited.add(func)
+        ordered_functions.append((func, depth))
+
+        # Get all functions called by this function
+        for called in func.getCalledFunctions(monitor):
+            traverse(called, depth + 1)
+
+    traverse(root_func, 0)
+    return ordered_functions
+
+
 def main():
     # Ask user for extraction mode
     from javax.swing import JOptionPane
 
-    options = ["Selected Functions", "Address Range", "All Functions"]
+    options = ["Call Graph (Execution Order)", "Selected Functions", "Address Range", "All Functions"]
     choice = askChoice(
         "Extract Decompiled Functions",
         "Choose extraction mode:",
@@ -234,7 +271,61 @@ def main():
 
     functions_to_extract = []
 
-    if choice == "Selected Functions":
+    if choice == "Call Graph (Execution Order)":
+        # Get starting function
+        selected = get_selected_functions()
+        if selected:
+            start_func = selected[0]
+        else:
+            # Ask for address
+            addr_str = askString(
+                "Starting Function",
+                "Enter function address (hex) or leave empty for entry point:"
+            )
+            if addr_str is None:
+                print("Cancelled by user")
+                return
+
+            if addr_str == "":
+                # Use entry point
+                start_func = getFunctionContaining(currentProgram.getImageBase())
+            else:
+                try:
+                    addr = currentProgram.getAddressFactory().getAddress(addr_str)
+                    start_func = getFunctionContaining(addr)
+                except:
+                    popup("Invalid address format! Use format like: 0x6f9e0")
+                    return
+
+        if not start_func:
+            popup("No function found at specified address!")
+            return
+
+        # Ask for depth and max functions
+        depth_str = askString("Call Depth", "Maximum call depth (default 5):", "5")
+        max_func_str = askString("Max Functions", "Maximum functions to extract (default 50):", "50")
+
+        if depth_str is None or max_func_str is None:
+            print("Cancelled by user")
+            return
+
+        try:
+            max_depth = int(depth_str)
+            max_functions = int(max_func_str)
+        except:
+            popup("Invalid number format!")
+            return
+
+        print("Extracting call graph starting from {} @ {}...".format(
+            start_func.getName(), start_func.getEntryPoint()
+        ))
+        print("  Max depth: {}".format(max_depth))
+        print("  Max functions: {}".format(max_functions))
+
+        functions_to_extract = extract_call_graph(start_func, max_depth, max_functions)
+        print("Found {} functions in call graph".format(len(functions_to_extract)))
+
+    elif choice == "Selected Functions":
         functions_to_extract = get_selected_functions()
         if not functions_to_extract:
             popup("No functions selected! Please select one or more functions in the listing.")
@@ -280,8 +371,16 @@ def main():
     try:
         # Extract function info
         functions_info = []
-        for func in functions_to_extract:
-            info = extractor.extract_function_info(func)
+        for item in functions_to_extract:
+            # Handle both plain functions and (function, depth) tuples
+            if isinstance(item, tuple):
+                func, depth = item
+                info = extractor.extract_function_info(func)
+                info['call_depth'] = depth
+            else:
+                func = item
+                info = extractor.extract_function_info(func)
+
             functions_info.append(info)
 
         # Format as markdown
