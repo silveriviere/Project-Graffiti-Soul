@@ -2,6 +2,7 @@
 // Decompiled from Jet Set Radio Future XBE
 
 #include "types.h"
+#include <cstdlib>  // For malloc
 
 // ============================================================================
 // FORWARD DECLARATIONS
@@ -121,19 +122,168 @@ void thread_cleanup(dword threadHandle) {
 // THE ACTUAL GAME STARTS HERE
 // ============================================================================
 
+// Forward declarations for game subsystems
+struct GameState;  // 0x8840 bytes - main game state structure
+extern GameState* g_GameState;  // Global at 0x0022fce0
+
+// Game subsystem functions
+extern GameState* game_state_constructor(void* this_ptr, int param2, int param3);  // 0x00012210
+extern void game_state_init_subsystem(GameState* gameState);  // 0x00012c10
+extern dword game_main_loop(GameState* gameState);  // 0x00013f80
+extern void game_frame_update(GameState* gameState);  // 0x00013a80
+extern void unknown_func_659c0();  // 0x000659c0
+extern void sleep_milliseconds(dword ms);  // 0x00145ca6
+
+// Global game state pointer (at 0x0022fce0)
+GameState* g_GameState = nullptr;
+
 // JSRF Game Main Function (0x0006f9e0)
 // This is where the actual game code begins!
 dword jsrf_game_main() {
     ADDR(0x0006f9e0);
 
-    // TODO: Decompile this next!
-    // This is the real game entry point
-    // Expected to contain:
-    // - Game initialization
-    // - Main game loop
-    // - Cleanup on exit
+    void* this_ptr;
+    dword* unaff_FS_OFFSET;
+    dword local_c;
+    byte* puStack_8;
+    dword local_4;
 
+    // SEH (Structured Exception Handling) setup
+    local_4 = 0xffffffff;
+    puStack_8 = (byte*)0x0018771b;  // Exception handler address
+    local_c = *unaff_FS_OFFSET;
+    *unaff_FS_OFFSET = (dword)(uintptr_t)&local_c;
+
+    // Allocate main game state (34,880 bytes)
+    this_ptr = malloc(0x8840);
+    local_4 = 0;
+
+    if (this_ptr == nullptr) {
+        g_GameState = nullptr;
+    }
+    else {
+        // Construct the game state object
+        g_GameState = game_state_constructor(this_ptr, 0, 0);
+    }
+
+    local_4 = 0xffffffff;
+
+    // Initialize game subsystems
+    game_state_init_subsystem(g_GameState);
+
+    // Run main game loop (this never returns until game exits)
+    game_main_loop(g_GameState);
+
+    // Cleanup: call destructor if game state exists
+    if (g_GameState != nullptr) {
+        // Virtual function call - likely destructor
+        // (**(code**)g_GameState)(1, this_ptr);
+        // TODO: Implement proper destructor call
+    }
+
+    // Restore SEH
+    *unaff_FS_OFFSET = local_c;
     return 0;
+}
+
+// Game State Subsystem Initialization (0x00012c10)
+void game_state_init_subsystem(GameState* gameState) {
+    ADDR(0x00012c10);
+
+    void* this_ptr;
+    void* puVar1;
+    dword* unaff_FS_OFFSET;
+    dword local_c;
+    byte* puStack_8;
+    dword local_4;
+
+    // SEH setup
+    local_4 = 0xffffffff;
+    puStack_8 = (byte*)0x00186c0b;
+    local_c = *unaff_FS_OFFSET;
+    *unaff_FS_OFFSET = (dword)(uintptr_t)&local_c;
+
+    // Initialize subsystem pointer at offset 0x87dc
+    *(void**)((byte*)gameState + 0x87dc) = nullptr;
+
+    // Check if initialization flag at offset 0x10 is valid
+    if (*(int*)((byte*)gameState + 0x10) >= 0) {
+        // Allocate 0x44 bytes for a subsystem object
+        this_ptr = malloc(0x44);
+        local_4 = 0;
+
+        if (this_ptr == nullptr) {
+            puVar1 = nullptr;
+        }
+        else {
+            // Initialize subsystem (constructor at 0x00012ae0)
+            // puVar1 = FUN_00012ae0(this_ptr, 0, -1, 0);
+            puVar1 = nullptr;  // TODO: Decompile FUN_00012ae0
+        }
+
+        // Store subsystem pointer at offset 0x87dc
+        *(void**)((byte*)gameState + 0x87dc) = puVar1;
+    }
+
+    // Restore SEH
+    *unaff_FS_OFFSET = local_c;
+    return;
+}
+
+// Main Game Loop (0x00013f80)
+// This function contains the infinite game loop
+dword game_main_loop(GameState* gameState) {
+    ADDR(0x00013f80);
+
+    // Check if game state is properly initialized
+    if (*(int*)((byte*)gameState + 0x10) < 0) {
+        return 0xffffffff;
+    }
+
+    // INFINITE GAME LOOP
+    do {
+        // Inner loop: check flag at offset 0x24
+        while (*(int*)((byte*)gameState + 0x24) != 0) {
+            unknown_func_659c0();
+            sleep_milliseconds(0x10);  // Sleep 16ms (~60 FPS)
+        }
+
+        // Update game frame (render, physics, input, etc.)
+        game_frame_update(gameState);
+
+    } while (true);  // Loop forever until game exits
+
+    // Unreachable - game loop never exits normally
+    // return 0;
+}
+
+// Stub implementations for functions we haven't decompiled yet
+GameState* game_state_constructor(void* this_ptr, int param2, int param3) {
+    ADDR(0x00012210);
+    // TODO: Decompile constructor
+    return (GameState*)this_ptr;
+}
+
+void game_frame_update(GameState* gameState) {
+    ADDR(0x00013a80);
+    // TODO: Decompile frame update
+    // This is where all the game logic happens each frame:
+    // - Input processing
+    // - Physics update
+    // - AI update
+    // - Rendering
+    // - Audio update
+}
+
+void unknown_func_659c0() {
+    ADDR(0x000659c0);
+    // TODO: Identify what this function does
+}
+
+void sleep_milliseconds(dword ms) {
+    ADDR(0x00145ca6);
+    // TODO: Implement sleep function
+    // Original likely calls Sleep() or similar
 }
 
 // ============================================================================

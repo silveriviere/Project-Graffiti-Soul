@@ -16,6 +16,7 @@ using sqword = int64_t;
 
 // Pointer types
 using pvoid = void*;
+using uintptr_t = std::uintptr_t;
 
 // Xbox-specific types (stubbed for now)
 // TODO: Replace with proper implementations as needed

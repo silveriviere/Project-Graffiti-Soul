@@ -9,7 +9,19 @@ Track original addresses from Ghidra analysis to maintain correspondence with th
 | (TBD)      | entry                   | XBE entry point (launches thread)    | Decompiled|
 | 0x147fb4   | runtime_wrapper_thread  | C/C++ runtime init wrapper           | Decompiled|
 | 0x145585   | thread_cleanup          | Thread cleanup/wait handler          | Stub      |
-| **0x0006f9e0** | **jsrf_game_main**  | **ACTUAL GAME ENTRY POINT**          | **TODO**  |
+| **0x0006f9e0** | **jsrf_game_main**  | **ACTUAL GAME ENTRY POINT**          | **Decompiled** |
+
+## Core Game Functions
+
+| Address    | Function Name           | Description                          | Status    |
+|------------|-------------------------|--------------------------------------|-----------|
+| 0x00012210 | game_state_constructor  | GameState constructor (0x8840 bytes) | Stub      |
+| 0x00012c10 | game_state_init_subsystem | Initialize game subsystems         | Decompiled|
+| 0x00012ae0 | subsystem_constructor   | Subsystem constructor (0x44 bytes)   | TODO      |
+| 0x00013f80 | game_main_loop          | Main game loop (infinite)            | Decompiled|
+| 0x00013a80 | game_frame_update       | Per-frame game update                | TODO      |
+| 0x000659c0 | unknown_func_659c0      | Unknown function in loop             | TODO      |
+| 0x00145ca6 | sleep_milliseconds      | Sleep function (~16ms for 60fps)     | Stub      |
 
 ## Initialization Functions
 
@@ -41,6 +53,16 @@ Track original addresses from Ghidra analysis to maintain correspondence with th
 | Address    | Name                    | Type            | Description           |
 |------------|-------------------------|-----------------|-----------------------|
 | 0x0027dce0 | (unknown)               | dword           | Set to 0x14 at entry  |
+| 0x0022fce0 | g_GameState             | GameState*      | Main game state (0x8840 bytes) |
+
+### GameState Structure (0x8840 bytes)
+
+| Offset     | Type                    | Description                          |
+|------------|-------------------------|--------------------------------------|
+| 0x0000     | vtable*                 | Virtual function table pointer       |
+| 0x0010     | int                     | Initialization flag (-1 = not init)  |
+| 0x0024     | int                     | Loop control flag (checked in main loop) |
+| 0x87dc     | void*                   | Subsystem pointer (0x44 bytes)       |
 
 ## Notes
 
