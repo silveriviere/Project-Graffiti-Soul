@@ -451,7 +451,7 @@ void sleep_milliseconds(dword ms) {
 ==============================================================================
 FUNCTION: Subsystem Frame Update Manager
 ADDRESS:  0x000123e0
-STATUS:   Complete
+STATUS:   Partial
 ==============================================================================
 
 DESCRIPTION:
@@ -609,7 +609,7 @@ int FUN_0015fa10() {
 ==============================================================================
 FUNCTION: Float Array Accessor (Hardware Register Reader)
 ADDRESS:  0x000694a0
-STATUS:   Complete
+STATUS:   Partial
 ==============================================================================
 
 DESCRIPTION:
