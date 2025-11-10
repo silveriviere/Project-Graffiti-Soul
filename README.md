@@ -40,7 +40,7 @@ This is a fan-made preservation project created to:
 
 Graffiti Soul is a reverse engineering and decompilation effort for Jet Set Radio Future, one of the original Xbox's most beloved titles. The goal is to create a matching decompilation that accurately reconstructs the original code.
 
-Checkout the Discord server here: https://discord.gg/cy6jxUu72N
+Checkout the Discord server here: https://discord.gg/8784r9FG
 
 ### Why Decompile?
 
