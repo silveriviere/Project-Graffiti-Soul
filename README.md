@@ -42,45 +42,6 @@ Graffiti Soul is a reverse engineering and decompilation effort for Jet Set Radi
 
 Checkout the Discord server here: https://discord.gg/8784r9FG
 
-### Why Decompile?
-
-- **Preservation**: Original Xbox hardware is aging and failing. Preserving these games in a documented, understandable form helps ensure they aren't lost to time.
-- **Education**: Understanding how commercial games were actually built provides valuable insights into game development techniques from that era.
-- **Native Port**: The ultimate goal is a complete, standalone reimplementation that runs natively on modern hardware (PC, Linux, macOS, etc.) without requiring an emulator or original Xbox hardware.
-- **Modding**: A complete decompilation allows the community to fix bugs, add features, and create mods (assuming you own the game legally).
-- **Modern Features**: Once complete, we can add quality-of-life improvements like higher resolutions, wider aspect ratios, improved controls, and online multiplayer.
-
-### Project Roadmap
-
-**Decompilation** 
-- Reverse engineer all game functions using Ghidra/IDA
-- Document function addresses and signatures in kb.json
-- Create matching C++ implementations
-- Current progress: Entry point, game loop, subsystem framework
-
-**Verification** 
-- Test decompiled functions by patching into original XBE
-- Verify behavioral correctness using xemu emulator
-- Ensure matching assembly output
-- This phase uses the testing infrastructure in TESTING.md
-
-**Native Port** (Future)
-- Replace Xbox-specific APIs with cross-platform equivalents
-- Implement Direct3D → modern graphics API translation (Vulkan/OpenGL/Metal)
-- Port audio, input, and file I/O systems
-- Create standalone executable that doesn't need emulator or original XBE
-- Support modern platforms: Windows, Linux, macOS, potentially consoles
-
-**Enhancement** (Future)
-- Add quality-of-life improvements
-- Higher resolutions and widescreen support
-- Improved frame rates
-- Modern controller support
-- Accessibility features
-- Bug fixes and improvements
-
-Much work remains to fully decompile all game systems, but the foundation is in place.
-
 ## Building
 
 ### Prerequisites
@@ -94,7 +55,7 @@ Much work remains to fully decompile all game systems, but the foundation is in 
 - Clang/LLVM toolchain
 - Python 3.8+ with dependencies (`pip install -r requirements.txt`)
 - Original JSRF XBE file (from your legally owned copy)
-- xemu emulator (https://xemu.app/)
+- xemu or equivalent emulator (https://xemu.app/)
 
 ### Build Instructions
 
@@ -181,23 +142,6 @@ Contributions are welcome! If you're interested in helping with this preservatio
 - Test your decompiled functions using the XBE patching workflow (see [TESTING.md](TESTING.md))
 - Verify that patched functions work correctly in xemu before marking as `complete`
 
-## Legal FAQ
-
-**Q: Is this legal?**
-
-A: Reverse engineering for interoperability, preservation, and educational purposes is generally protected under fair use in many jurisdictions. That said, you must own a legal copy of the game to use this project ethically and legally.
-
-**Q: Can I play the game with just this code?**
-
-A: No. This decompilation is just code - it doesn't include any of the actual game content like graphics, sounds, music, or levels. You would need the original game assets from your legally owned copy.
-
-**Q: Will you ever distribute game files?**
-
-A: No. We will never distribute copyrighted game files, assets, or executable code from the original game. This repository only contains our reverse-engineered recreation of the code structure.
-
-**Q: Is this an emulator?**
-
-A: No. This is a native reimplementation of the game code. It's more like a port that would still require access to the original game's data files.
 
 ## Disclaimer
 
@@ -210,10 +154,3 @@ If you love Jet Set Radio Future, please support SEGA by purchasing their games.
 - [Jet Set Radio Future on Wikipedia](https://en.wikipedia.org/wiki/Jet_Set_Radio_Future)
 - [Original Xbox Technical Documentation](https://xboxdevwiki.net/)
 
-## License
-
-This decompilation project is released for educational and preservation purposes. The original game code and assets remain the property of SEGA Corporation. See LICENSE for details on the decompilation code itself.
-
----
-
-Remember: This project is only legal and ethical if you own a legitimate copy of the game. Please support game preservation by purchasing games legally.
